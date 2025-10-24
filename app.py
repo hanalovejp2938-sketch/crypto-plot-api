@@ -4,7 +4,9 @@ import pandas as pd
 
 plt.rcParams['font.family'] = 'Meiryo'
 
-app = Flask(__name__)
+font_path = "fonts/IPAexGothic.ttf"
+font_prop = fm.FontProperties(fname=font_path)
+plt.rcParams["font.family"] = font_prop.get_name()
 
 @app.route("/plot", methods=["GET"])
 def plot_crypto():
@@ -31,4 +33,5 @@ def plot_crypto():
 
 # 🔽 これを追加！
 if __name__ == "__main__":
+
     app.run(debug=True)
