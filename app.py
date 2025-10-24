@@ -1,25 +1,27 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.font_manager as fm
+import os
 
-plt.rcParams['font.family'] = 'Meiryo'
+app = Flask(__name__)
 
-font_path = "fonts/IPAexGothic.ttf"
-font_prop = fm.FontProperties(fname=font_path)
-plt.rcParams["font.family"] = font_prop.get_name()
-
-@app.route("/plot", methods=["GET"])
+@app.route("/plot", methods=["POST"])
 def plot_crypto():
-    # クエリパラメータから取得
-    coins = ["btc", "eth", "sol", "doge", "xrp"]
-    data = {
-        coin.upper(): float(request.args.get(coin, 0))
-        for coin in coins
-        if request.args.get(coin)
-    }
+    # JSONデータを受け取る
+    data = request.get_json()
 
-    # データフレーム化
+    # データがない場合はエラー
+    if not data:
+        return jsonify({"error": "No JSON data received"}), 400
+
+    # データ整形
     df = pd.DataFrame(list(data.items()), columns=["Coin", "Price"])
+
+    # 日本語フォント設定（Render対応）
+    font_path = "fonts/IPAexGothic.ttf"
+    font_prop = fm.FontProperties(fname=font_path)
+    plt.rcParams["font.family"] = font_prop.get_name()
 
     # グラフ生成
     plt.figure(figsize=(8, 4))
@@ -30,8 +32,3 @@ def plot_crypto():
     plt.savefig("crypto_plot.png")
 
     return send_file("crypto_plot.png", mimetype="image/png")
-
-# 🔽 これを追加！
-if __name__ == "__main__":
-
-    app.run(debug=True)
