@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 
-@app.route("/plot", methods=["POST"])
+@app.route("/plot", methods=["GET", "POST"])
 def plot_crypto():
     # JSONデータを受け取る
     data = request.get_json()
@@ -32,3 +32,4 @@ def plot_crypto():
     plt.savefig("crypto_plot.png")
 
     return send_file("crypto_plot.png", mimetype="image/png")
+
